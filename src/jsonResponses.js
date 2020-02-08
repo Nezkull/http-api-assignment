@@ -17,31 +17,6 @@ const respondXML = (request, response, status, obj) => {
   response.end();
 };
 
-
-/*
-const responses = (request, response, page, type) => {
-    const responseJSON = {
-        message: 'Name and age are both required.',
-    };
-
-    switch(page){
-        case '/success':
-            if()
-            break;
-        case 'badRequest':
-            break;
-        case 'unauthorized':
-            break;
-        case 'forbidden':
-            break;
-        case 'internal':
-            break;
-        case 'notImplemented':
-            break;
-
-    }
-}
-*/
 const success = (request, response, type) => {
   const responseJSON = {
     message: 'This is a successful response',
@@ -53,13 +28,6 @@ const success = (request, response, type) => {
     respondXML(request, response, 200, responseJSON);
   }
 };
-
-// might not need meta for everything, also might do need
-/*
-const successMeta = (request, response) => {
-  respondJSONMeta(request, response, 200);
-};
-*/
 
 const badRequest = (request, response, param, type) => {
   const responseJSON = {

@@ -6,25 +6,6 @@ const jsonHandler = require('./jsonResponses.js');
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
-// look at status-code-example-done on class repo for stuff
-
-// redo this part
-/*
-const urlStruct = {
-  GET: {
-    '/': htmlHandler.getIndex,
-    '/style.css': htmlHandler.getCSS,
-    '/success': jsonHandler.success,
-    '/badRequest': jsonHandler.badRequest,
-    '/unauthorized': jsonHandler.unauthorized,
-    '/forbidden': jsonHandler.forbidden,
-    '/internal': jsonHandler.internal,
-    '/notImplemented': jsonHandler.notImplemented,
-    notFound: jsonHandler.notFound,
-  },
-};
-*/
-
 const handlePost = (request, response, parsedUrl) => {
   if (parsedUrl.pathname === '/addUser') {
     const res = response;
@@ -65,19 +46,19 @@ const handleGet = (request, response, parsedUrl, param, types) => {
       jsonHandler.badRequest(request, response, param, types);
       break;
     case '/unauthorized':
-      jsonHandler.unauthorized(request, response);
+      jsonHandler.unauthorized(request, response, param, types);
       break;
     case '/forbidden':
-      jsonHandler.forbidden(request, response);
+      jsonHandler.forbidden(request, response, types);
       break;
     case '/internal':
-      jsonHandler.internal(request, response);
+      jsonHandler.internal(request, response, types);
       break;
     case '/notImplemented':
-      jsonHandler.notImplemented(request, response);
+      jsonHandler.notImplemented(request, response, types);
       break;
     default:
-      jsonHandler.notFound(request, response);
+      jsonHandler.notFound(request, response, types);
       break;
   }
 };
@@ -100,7 +81,6 @@ const onRequest = (request, response) => {
   }
 };
 
-// look at body-parse-example for css and stuff
 
 http.createServer(onRequest).listen(port);
 
