@@ -1,40 +1,102 @@
 const http = require('http');
+const url = require('url');
+const query = require('querystring');
 const htmlHandler = require('./htmlResponses.js');
+const jsonHandler = require('./jsonResponses.js');
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 // look at status-code-example-done on class repo for stuff
 
-// redo this part 
+// redo this part
+/*
 const urlStruct = {
-    '/': htmlHandler.temp,
-    '/success': htmlHandler.temp,
-    '/badRequest': htmlHandler.temp,
-    '/unauthorized': htmlHandler.temp,
-    '/forbidden': htmlHandler.temp,
-    '/internal': htmlHandler.temp,
-    '/notImplemented': htmlHandler.temp
-}
+  GET: {
+    '/': htmlHandler.getIndex,
+    '/style.css': htmlHandler.getCSS,
+    '/success': jsonHandler.success,
+    '/badRequest': jsonHandler.badRequest,
+    '/unauthorized': jsonHandler.unauthorized,
+    '/forbidden': jsonHandler.forbidden,
+    '/internal': jsonHandler.internal,
+    '/notImplemented': jsonHandler.notImplemented,
+    notFound: jsonHandler.notFound,
+  },
+};
+*/
+
+const handlePost = (request, response, parsedUrl) => {
+  if (parsedUrl.pathname === '/addUser') {
+    const res = response;
+
+    const body = [];
+
+    request.on('error', (err) => {
+      console.dir(err);
+      res.statusCode = 400;
+      res.end();
+    });
+
+    request.on('data', (chunk) => {
+      body.push(chunk);
+    });
+
+    request.on('end', () => {
+      const bodyString = Buffer.concat(body).toString();
+      const bodyParams = query.parse(bodyString);
+
+      jsonHandler.addUser(request, response, bodyParams);
+    });
+  }
+};
+
+const handleGet = (request, response, parsedUrl, acceptedTypes) => {
+  
+
+  switch (parsedUrl.pathname) {
+    case '/':
+      htmlHandler.getIndex(request, response);
+      break;
+    case '/style.css':
+      htmlHandler.getCSS(request, response);
+      break;
+    case '/success':
+      jsonHandler.success(request, response);
+      break;
+    case '/badRequest':
+      jsonHandler.badRequest(request, response);
+      break;
+    case '/unauthorized':
+      jsonHandler.unauthorized(request, response);
+      break;
+    case '/forbidden':
+      jsonHandler.forbidden(request, response);
+      break;
+    case '/internal':
+      jsonHandler.internal(request, response);
+      break;
+    case '/notImplemented':
+      jsonHandler.notImplemented(request, response);
+      break;
+    default:
+      jsonHandler.notFound(request, response);
+      break;
+  }
+};
 
 const onRequest = (request, response) => {
-    console.log(request.url);
+  console.log(request.url);
+
+  const parsedURL = url.parse(request.url);
+
+    const acceptedTypes = request.headers.accept.split(',');
     
-    /*
-    switch(request.url) {
-        case '/':
-            break;
-        case '/badRequest':
-            break;
-        case '/unauthorized':
-            break;
-        case '/forbidden':
-            break;
-        case 'internal':
-            break;
-        case 
-    }
-    */
-}
+  if (request.method === 'POST') {
+    handlePost(request, response, parsedURL);
+  } else {
+    handleGet(request, response, parsedURL);
+  }
+};
 
 // look at body-parse-example for css and stuff
 

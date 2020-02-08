@@ -6,23 +6,171 @@
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
   <script type="text/babel">
-    // look at head-request-class-example for status code stuff
+    const handleResponse = (xhr) => {
+        const type = xhr.getResponseHeader('content-type');
+        const content = document.querySelector('#content');
+        
+        if(type === 'application/json'){
+            const obj = JSON.parse(xhr.response);
+            console.dir(obj);
+            
+            if(obj.message){
+                
+            }
+        }
+        
+    }
+
+    const sendAjax = (url, typeSelected) => {
+        const xhr = new XMLHttpRequest();
+        
+        xhr.open('GET', url);
+        xhr.setRequestHeader('Accept', typeSelected);
+        
+        xhr.onload = () => handleResponse(xhr);
+        
+        xhr.send();
+    }
+    
+    const init = () => {
+        const submit = document.querySelector('#send');
+        const page = document.querySelector('#page');
+        const type = document.querySelector('#type');
+        
+        const update = () => sendAjax(page.value, type.value);
+        
+        submit.addEventListener('click', update);
+    }
+    
+    /*
+    const parseJSON = (xhr, content) => {
+        const obj = JSON.parse(xhr.response);
+        console.dir(obj);
+        
+        if(obj.message){
+            content.innerHTML += `<p>${obj.message}</p>}`;
+        }
+    };
+
     const handleResponse = (xhr, parseResponse) => {
         const content = document.querySelector('#content');
         
         switch(xhr.status){
             case 200:
-                break;
-            case: 201:
+                content.innerHTML = `<b>Success</b>`;
                 break;
             case 400:
+                content.innerHTML = `<b>Bad Request</b>`;
+                break;
+            case 401:
+                content.innerHTML = `<b>Unauthorized</b>`;
+                break;
+            case 403:
+                content.innerHTML = `<b>Forbidden</b>`;
                 break;
             case 404:
+                content.innerHTML = `<b>Resource Not Found</b>`;
+                break;
+            case 500:
+                content.innerHTML = `<b>Internal</b>`;
+                break;
+            case 501:
+                content.innerHTML = `<b>Not Implemented</b>`;
                 break;
             default:
+                content.innerHTML = `Error code not implemented by client.`;
                 break;
         }
+        
+        parseJSON(xhr, content);
+    };
+
+    const sendPost = (e, pageSelect, typeSelect) => {
+        e.preventDefault();
+        
+        const page = pageSelect;
+        const type = typeSelect;
+        /*
+        const nameAction = nameForm.getAttribute('action');
+        const nameMethod = nameForm.getAttribute('method"');
+        
+        const nameField = nameForm.querySelector('#nameField');
+        const ageField = nameForm.querySelector('#ageField');
+        */
+        /*
+        const xhr = new XMLHttpRequest();
+        // ('GET',?) || ('POST',?)
+        xhr.open('POST', page.value);
+        
+        xhr.setRequestHeader('Accept', 'application/json');
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        
+        xhr.onload = () => handleResponse(xhr);
+        
+        // console.log(page.value);
+        // console.log(type.value);
+        
+        const formData = `page=${page.value}&type=${type.value}`;
+        
+        xhr.send(formData);
+        
+        return false;
     }
+
+    const updateAJAX = (temp) => {
+        // xhr
+        const xhr = new XMLHttpRequest();
+        // open get temp
+        xhr.open('GET', temp)
+        
+        // setheader
+        xhr.setRequestHeader('Accept', 'application/json');
+        //onload
+        xhr.onload = () => handleResponse(xhr);
+        //send
+        xhr.send();
+    }
+    
+    
+    const requestUpdate = (e, userForm) => {
+        e.preventDefault();
+        
+        const statusCode = userForm.querySelector('#page').value;
+        const returnType = userForm.querySelector('#type').value;
+        
+        const xhr = new XMLHttpRequest();
+        xhr.open(returnType, statusCode);
+        xhr.setRequestHeader('Accept', 'application/json');
+        
+        // this is probably very wrong
+        if(returnType == 'application/json'){
+            xhr.onload = () => handleResponse(xhr, true);
+        }else{
+            xhr.onload = () => handleResponse(xhr, false);
+        }
+        
+        xhr.send();
+        
+        return false;
+        
+    };
+    
+/*
+    // i think this is close to correct
+    const init = () => {
+        const submit = document.querySelector('#send');
+        const page = document.querySelector('#page');
+        const type = document.querySelector('#type');
+        
+        console.log(page.value);
+        
+        const update = (e) => sendPost(e, page, type);
+        
+        //eventlistener
+        submit.addEventListener('click', update);
+    }
+    */
+    window.onload = init;
   </script>
 </head>
 <body>
