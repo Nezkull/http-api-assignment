@@ -50,9 +50,7 @@ const handlePost = (request, response, parsedUrl) => {
   }
 };
 
-const handleGet = (request, response, parsedUrl, acceptedTypes) => {
-  
-
+const handleGet = (request, response, parsedUrl, param, types) => {
   switch (parsedUrl.pathname) {
     case '/':
       htmlHandler.getIndex(request, response);
@@ -61,10 +59,10 @@ const handleGet = (request, response, parsedUrl, acceptedTypes) => {
       htmlHandler.getCSS(request, response);
       break;
     case '/success':
-      jsonHandler.success(request, response);
+      jsonHandler.success(request, response, types);
       break;
     case '/badRequest':
-      jsonHandler.badRequest(request, response);
+      jsonHandler.badRequest(request, response, param, types);
       break;
     case '/unauthorized':
       jsonHandler.unauthorized(request, response);
@@ -88,13 +86,17 @@ const onRequest = (request, response) => {
   console.log(request.url);
 
   const parsedURL = url.parse(request.url);
+  const param = query.parse(parsedURL.query);
+  const type = request.headers.accept;
 
-    const acceptedTypes = request.headers.accept.split(',');
-    
+  console.dir(param);
+  console.dir(type);
+
+
   if (request.method === 'POST') {
     handlePost(request, response, parsedURL);
   } else {
-    handleGet(request, response, parsedURL);
+    handleGet(request, response, parsedURL, param, type);
   }
 };
 

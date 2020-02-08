@@ -3,24 +3,21 @@ const respondJSON = (request, response, status, obj) => {
   response.write(JSON.stringify(obj));
   response.end();
 };
-/*
+
 const respondXML = (request, response, status, obj) => {
   response.writeHead(status, { 'Content-Type': 'text/xml' });
-  response.write(obj);
+  let responseXML = '<response>';
+
+  responseXML = `${responseXML} <message>${obj.message}</message>`;
+  if (obj.id) {
+    responseXML = `${responseXML} <id>${obj.id}</id>`;
+  }
+  responseXML = `${responseXML} </response>`;
+  response.write(responseXML);
   response.end();
 };
-*/
 
-/*
-const respondJSONMeta = (request, response, status) => {
-  const headers = {
-    'Content-Type': 'application/json',
-  };
 
-  response.writeHead(status, headers);
-  response.end();
-};
-*/
 /*
 const responses = (request, response, page, type) => {
     const responseJSON = {
@@ -45,12 +42,16 @@ const responses = (request, response, page, type) => {
     }
 }
 */
-const success = (request, response) => {
+const success = (request, response, type) => {
   const responseJSON = {
     message: 'This is a successful response',
   };
 
-  respondJSON(request, response, 200, responseJSON);
+  if (type === 'application/json') {
+    respondJSON(request, response, 200, responseJSON);
+  } else {
+    respondXML(request, response, 200, responseJSON);
+  }
 };
 
 // might not need meta for everything, also might do need
@@ -60,7 +61,7 @@ const successMeta = (request, response) => {
 };
 */
 
-const badRequest = (request, response, param) => {
+const badRequest = (request, response, param, type) => {
   const responseJSON = {
     message: 'This request has the required parameters',
   };
@@ -70,13 +71,19 @@ const badRequest = (request, response, param) => {
     responseJSON.message = 'Missing valid query parameter set to true';
     responseJSON.id = 'badRequest';
 
-    return respondJSON(request, response, 400, responseJSON);
+    if (type === 'application/json') {
+      return respondJSON(request, response, 400, responseJSON);
+    }
+    return respondXML(request, response, 400, responseJSON);
   }
 
-  return respondJSON(request, response, 200, responseJSON);
+  if (type === 'application/json') {
+    return respondJSON(request, response, 200, responseJSON);
+  }
+  return respondXML(request, response, 200, responseJSON);
 };
 
-const unauthorized = (request, response, param) => {
+const unauthorized = (request, response, param, type) => {
   const responseJSON = {
     message: 'This request has the required parameter',
   };
@@ -85,46 +92,66 @@ const unauthorized = (request, response, param) => {
     responseJSON.message = 'Missing loggedIn query parameter set to true';
     responseJSON.id = 'unauthorized';
 
-    return respondJSON(request, response, 401, responseJSON);
+    if (type === 'application/json') {
+      return respondJSON(request, response, 401, responseJSON);
+    }
+    return respondXML(request, response, 401, responseJSON);
   }
 
-  return respondJSON(request, response, 200, responseJSON);
+  if (type === 'application/json') {
+    return respondJSON(request, response, 200, responseJSON);
+  }
+  return respondXML(request, response, 200, responseJSON);
 };
 
-const forbidden = (request, response) => {
+const forbidden = (request, response, type) => {
   const responseJSON = {
     message: 'You do not have access to this content.',
     id: 'forbidden',
   };
 
-  respondJSON(request, response, 403, responseJSON);
+  if (type === 'application/json') {
+    respondJSON(request, response, 403, responseJSON);
+  } else {
+    respondXML(request, response, 403, responseJSON);
+  }
 };
 
-const internal = (request, response) => {
+const internal = (request, response, type) => {
   const responseJSON = {
     message: 'Internal Server Error. Something went wrong.',
     id: 'internal',
   };
-
-  respondJSON(request, response, 500, responseJSON);
+  if (type === 'application/json') {
+    respondJSON(request, response, 500, responseJSON);
+  } else {
+    respondXML(request, response, 500, responseJSON);
+  }
 };
 
-const notImplemented = (request, response) => {
+const notImplemented = (request, response, type) => {
   const responseJSON = {
     message: 'A get request for this page has not been implemented yet. Check again later for updated content.',
     id: 'notImplemented',
   };
 
-  respondJSON(request, response, 501, responseJSON);
+  if (type === 'application/json') {
+    respondJSON(request, response, 501, responseJSON);
+  } else {
+    respondXML(request, response, 501, responseJSON);
+  }
 };
 
-const notFound = (request, response) => {
+const notFound = (request, response, type) => {
   const responseJSON = {
     message: 'The page you are looking for was not found',
     id: 'notFound',
   };
-
-  respondJSON(request, response, 404, responseJSON);
+  if (type === 'application/json') {
+    respondJSON(request, response, 404, responseJSON);
+  } else {
+    respondXML(request, response, 404, responseJSON);
+  }
 };
 
 module.exports = {

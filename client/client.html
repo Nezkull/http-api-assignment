@@ -6,19 +6,66 @@
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
   <script type="text/babel">
-    const handleResponse = (xhr) => {
-        const type = xhr.getResponseHeader('content-type');
-        const content = document.querySelector('#content');
+    const parseJSON = (xhr, content) => {
         
         if(type === 'application/json'){
             const obj = JSON.parse(xhr.response);
             console.dir(obj);
             
             if(obj.message){
-                
+                content.innerHTML += `<p>Message: ${obj.message}</p>`;
             }
+        }else{
+            // const mess = xhr.responseXML.querySelector('message').textContent;
+            content.innerHTML += `<p>Message: ${xhr.responseXML.querySelector('message').textContent}</p>`;
         }
         
+    }
+
+    const handleResponse = (xhr) => {
+        const type = xhr.getResponseHeader('content-type');
+        const content = document.querySelector('#content');
+        /*
+        if(type === 'application/json'){
+            const obj = JSON.parse(xhr.response);
+            console.dir(obj);
+            
+            if(obj.message){
+                content.innerHTML = `Message: ${obj.message}`;
+            }
+        }else{
+            // const mess = xhr.responseXML.querySelector('message').textContent;
+            content.innerHTML = `Message: ${xhr.responseXML.querySelector('message').textContent}`;
+        }
+        */
+        switch(xhr.status){
+            case 200:
+                content.innerHTML = `<b>Success</b>`;
+                break;
+            case 400:
+                content.innerHTML = `<b>Bad Request</b>`;
+                break;
+            case 401:
+                content.innerHTML = `<b>Unauthorized</b>`;
+                break;
+            case 403:
+                content.innerHTML = `<b>Forbidden</b>`;
+                break;
+            case 404:
+                content.innerHTML = `<b>Resource Not Found</b>`;
+                break;
+            case 500:
+                content.innerHTML = `<b>Internal</b>`;
+                break;
+            case 501:
+                content.innerHTML = `<b>Not Implemented</b>`;
+                break;
+            default:
+                content.innerHTML = `Error code not implemented by client.`;
+                break;
+        }
+        
+        parseJSON(xhr, content);
     }
 
     const sendAjax = (url, typeSelected) => {
