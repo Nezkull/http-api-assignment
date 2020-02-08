@@ -7,7 +7,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
   <script type="text/babel">
     const parseJSON = (xhr, content) => {
-        
+        const type = xhr.getResponseHeader('content-type');
         if(type === 'application/json'){
             const obj = JSON.parse(xhr.response);
             console.dir(obj);
@@ -16,14 +16,13 @@
                 content.innerHTML += `<p>Message: ${obj.message}</p>`;
             }
         }else{
-            // const mess = xhr.responseXML.querySelector('message').textContent;
             content.innerHTML += `<p>Message: ${xhr.responseXML.querySelector('message').textContent}</p>`;
         }
         
     }
 
     const handleResponse = (xhr) => {
-        const type = xhr.getResponseHeader('content-type');
+        
         const content = document.querySelector('#content');
         /*
         if(type === 'application/json'){
